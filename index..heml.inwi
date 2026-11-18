@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dir Iddik · Classes Connectées | Plateforme Collaborative inwi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --inwi-magenta: #A61C6C;
+      --inwi-magenta-dark: #841455;
+      --inwi-magenta-light: #FDF2F8;
+      --inwi-violet: #4B1669;
+      --inwi-violet-dark: #330D49;
+      --inwi-teal: #18828C;
+      --inwi-bg: #FAF7FC;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--inwi-bg);
+      color: #1F1627;
+      scroll-behavior: smooth;
+    }
+
+    /* Palette personnalisée inwi / Dir Iddik */
+    .bg-inwi-magenta { background-color: var(--inwi-magenta); }
+    .hover\:bg-inwi-magenta-dark:hover { background-color: var(--inwi-magenta-dark); }
+    .text-inwi-magenta { color: var(--inwi-magenta); }
+    .border-inwi-magenta { border-color: var(--inwi-magenta); }
+
+    .bg-inwi-violet { background-color: var(--inwi-violet); }
+    .text-inwi-violet { color: var(--inwi-violet); }
+    .border-inwi-violet { border-color: var(--inwi-violet); }
+
+    .bg-inwi-teal { background-color: var(--inwi-teal); }
+    .text-inwi-teal { color: var(--inwi-teal); }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #4B1669 0%, #7B196B 52%, #A61C6C 100%);
+    }
+
+    /* Mode Bas Débit (Zone Rurale) */
+    body.low-data-mode .hero-gradient {
+      background: #4B1669 !important;
+    }
+    body.low-data-mode * {
+      box-shadow: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+    body.low-data-mode .decorative-blur {
+      display: none !important;
+    }
+
+    .nav-tab.active {
+      color: var(--inwi-magenta);
+      border-bottom: 3px solid var(--inwi-magenta);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- BARRE SUPÉRIEURE : PARTENAIRES & MODE BAS DÉBIT -->
+  <div class="bg-inwi-violet text-white text-xs py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-pink-400"></span>
+        <span>Programme <strong>Classes Connectées · inwi</strong> avec le soutien de la <strong>Fondation Al Mada</strong></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="roleSwitcher" onchange="switchRole(this.value)" class="bg-white/15 text-white border border-white/25 rounded-md px-2.5 py-1 text-xs font-medium focus:outline-none">
+          <option value="benevole" class="text-gray-900">Profil : Bénévole</option>
+          <option value="association" class="text-gray-900">Profil : Association locale</option>
+          <option value="rse" class="text-gray-900">Profil : Direction RSE / Référent</option>
+        </select>
+        <button id="lowDataBtn" onclick="toggleLowDataMode()" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/30 px-2.5 py-1 rounded-md font-medium transition">
+          <span id="lowDataDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="lowDataText">Mode Bas Débit : OFF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER & LOGO DIR IDDIK -->
+  <header class="bg-white border-b border-purple-100 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo officiel vectoriel Dir Iddik + Badge inwi -->
+        <a href="#accueil" class="flex items-center gap-3 group">
+          <div class="flex items-center gap-2.5 bg-white p-1.5 rounded-xl border border-purple-100">
+            <!-- SVG fidèle au logo Dir Iddik (Main-cœur magenta + typographie) -->
+            <svg width="46" height="48" viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo Dir Iddik">
+              <!-- Doigts rayonnants -->
+              <path d="M36 33C34 21 37 11 42 11C47 11 49 21 47 33C46 38 38 38 36 33Z" fill="#A61C6C"/>
+              <path d="M52 30C53 16 58 6 63 7C68 8 69 19 65 32C63 37 52 36 52 30Z" fill="#A61C6C"/>
+              <path d="M69 34C73 20 80 12 85 14C90 16 88 27 81 39C78 44 67 40 69 34Z" fill="#A61C6C"/>
+              <path d="M83 45C90 34 99 28 103 32C107 36 102 46 92 54C87 58 80 50 83 45Z" fill="#A61C6C"/>
+              <path d="M88 64C99 58 110 57 112 62C114 67 105 74 93 77C87 78 83 67 88 64Z" fill="#A61C6C"/>
+              <!-- Paume en forme de cœur -->
+              <path d="M51 44C42 36 27 39 24 52C20 68 31 85 35 91C37 94 42 94 47 93C56 91 74 85 80 72C85 61 78 49 67 48C60 47 55 51 53 53C53 50 53 46 51 44Z" fill="#A61C6C"/>
+              <!-- Reflets blancs intérieurs caractéristiques -->
+              <path d="M32 56C30 65 32 76 36 83" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M40 71C40 75 41 79 43 82" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              <!-- Texte dir iddik -->
+              <text x="60" y="117" text-anchor="middle" fill="#A61C6C" font-family="Plus Jakarta Sans, Arial, sans-serif" font-weight="800" font-size="23" letter-spacing="-0.5">dir iddik</text>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg text-inwi-violet tracking-tight">Classes Connectées</span>
+              <span class="bg-inwi-magenta text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">inwi</span>
+            </div>
+            <p class="text-xs text-gray-500 hidden sm:block">Plateforme collaborative de volontariat </p>
+          </div>
+        </a>
+
+        <!-- Navigation principale (5 fonctions de la plateforme) -->
+        <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
+          <a href="#missions" class="nav-tab py-7 hover:text-inwi-magenta transition">1. Missions</a>
+          <a href="#inscription" class="nav-tab py-7 hover:text-inwi-magenta transition">2. Inscription</a>
+          <a href="#ecoles" class="nav-tab py-7 hover:text-inwi-magenta transition">3. Suivi Écoles</a>
+          <a href="#communication" class="nav-tab py-7 hover:text-inwi-magenta transition">4. Kits & Formation</a>
+          <a href="#impact" class="nav-tab py-7 hover:text-inwi-magenta transition">5. Impact & KPIs</a>
+        </nav>
+
+        <!-- Bouton action rapide -->
+        <div class="flex items-center gap-2">
+          <a href="#inscription" class="bg-inwi-magenta hover:bg-inwi-magenta-dark text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-sm transition">
+            Je m'engage
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECTION HERO & CHIFFRES CLÉS -->
+  <section id="accueil" class="hero-gradient text-white relative overflow-hidden">
+    <div class="decorative-blur absolute -top-24 -right-24 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 relative z-10">
+      <div class="grid lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold">
+            <span>🇲🇦 Inclusion numérique en milieu rural · Appel national 2026</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight">
+            Connectons ensemble les écoles rurales du Maroc avec <span class="text-pink-200 underline decoration-pink-400/60">Dir Iddik</span>
+          </h1>
+          <p class="text-purple-100 text-base sm:text-lg max-w-2xl leading-relaxed">
+            Une plateforme unique pour centraliser les bénévoles, choisir vos missions près de chez vous, suivre l'équipement des salles multimédias en temps réel et mesurer notre impact social.
+          </p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#missions" class="bg-white text-inwi-violet hover:bg-pink-50 font-bold px-6 py-3.5 rounded-xl shadow-md transition">
+              Découvrir les 40 écoles 2026
+            </a>
+            <a href="#inscription" class="bg-inwi-magenta border border-pink-300/40 hover:bg-inwi-magenta-dark text-white font-bold px-6 py-3.5 rounded-xl transition">
+              Créer mon profil bénévole
+            </a>
+          </div>
+        </div>
+
+        <!-- Carte Chiffres Clés (issu du diagnostic) -->
+        <div class="lg:col-span-5">
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-white/15 pb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-pink-200">Impact Dir Iddik · Classes Connectées</span>
+              <span class="text-xs bg-emerald-400/20 text-emerald-200 px-2.5 py-0.5 rounded-full font-semibold">Actif 2026</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="text-3xl font-extrabold">110+</div>
+                <div class="text-xs text-purple-100 mt-1">Écoles équipées depuis 2021</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="text-3xl font-extrabold text-pink-200">34 000+</div>
+                <div class="text-xs text-purple-100 mt-1">Élèves bénéficiaires</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="text-3xl font-extrabold">40</div>
+                <div class="text-xs text-purple-100 mt-1">Nouvelles écoles en 2026</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="text-3xl font-extrabold text-teal-200">12</div>
+                <div class="text-xs text-purple-100 mt-1">Régions du Royaume</div>
+              </div>
+            </div>
+            <div class="bg-white/10 rounded-xl p-3.5 flex items-center justify-between text-xs">
+              <span>Bénévoles inscrits sur la plateforme :</span>
+              <span id="liveVolunteerCount" class="font-extrabold text-base text-pink-200">148 bénévoles</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANDEAU RÔLE ACTIF (Démonstration Conduite du Changement) -->
+  <div id="roleBanner" class="bg-pink-50 border-b border-pink-200 py-3 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-sm">
+      <div class="flex items-center gap-2 text-inwi-violet font-medium">
+        <span class="bg-inwi-magenta text-white text-xs font-bold px-2 py-0.5 rounded">Espace Actif</span>
+        <span id="roleDescription">Vous naviguez en tant que <strong>Bénévole (inwi ou externe)</strong> : inscrivez-vous et postulez en 1 clic à une mission.</span>
+      </div>
+      <span class="text-xs text-gray-500"> </span>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+    <!-- MODULE 1 : CHOIX DES MISSIONS (Affectation rapide selon la zone) -->
+    <section id="missions" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Fonctionnalité 1 · Affectation rapide</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet mt-1">Choisir une mission terrain</h2>
+          <p class="text-gray-600 text-sm mt-1">Filtrez par région et compétence pour rejoindre l'équipement d'une salle multimédia ou animer un atelier.</p>
+        </div>
+
+        <!-- Filtres -->
+        <div class="flex flex-wrap gap-3">
+          <select id="filterRegion" onchange="renderMissions()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+            <option value="all">Toutes les régions (12)</option>
+            <option value="Rabat-Salé-Kénitra">Rabat-Salé-Kénitra</option>
+            <option value="Drâa-Tafilalet">Drâa-Tafilalet</option>
+            <option value="Marrakech-Safi">Marrakech-Safi</option>
+            <option value="Souss-Massa">Souss-Massa</option>
+            <option value="Fès-Meknès">Fès-Meknès</option>
+            <option value="Tanger-Tétouan-Al Hoceïma">Tanger-Tétouan-Al Hoceïma</option>
+            <option value="Oriental">Oriental</option>
+            <option value="Béni Mellal-Khénifra">Béni Mellal-Khénifra</option>
+            <option value="Casablanca-Settat">Casablanca-Settat</option>
+          </select>
+
+          <select id="filterType" onchange="renderMissions()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+            <option value="all">Tous types de missions</option>
+            <option value="Installation matériel">Installation matériel</option>
+            <option value="Atelier pédagogique">Atelier pédagogique</option>
+            <option value="Suivi & Maintenance">Suivi & Maintenance</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grille des missions -->
+      <div id="missionsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- MODULE 2 : INSCRIPTION EN LIGNE & PROFIL BÉNÉVOLE -->
+    <section id="inscription" class="bg-white rounded-3xl border border-purple-100 p-6 sm:p-10 shadow-sm">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-7 space-y-6">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Fonctionnalité 2 · Centralisation</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet mt-1">Inscription & Profil Bénévole</h2>
+            <p class="text-gray-600 text-sm mt-1">
+              Créez votre fiche unique pour recevoir des alertes missions dans votre région et obtenir vos badges de reconnaissance Dir Iddik.
+            </p>
+          </div>
+
+          <form id="volunteerForm" onsubmit="handleVolunteerRegister(event)" class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Nom & Prénom *</label>
+              <input type="text" id="volName" required placeholder="Ex : Kaissari Nada" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Téléphone WhatsApp *</label>
+              <input type="tel" id="volPhone" required placeholder="Ex : 06 61 00 00 00" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Catégorie d'acteur *</label>
+              <select id="volRole" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                <option value="Bénévole externe / Étudiant">Bénévole externe / Étudiant</option>
+                <option value="Collaborateur inwi">Collaborateur inwi</option>
+                <option value="Association locale partenaire">Association locale partenaire</option>
+                <option value="Enseignant / Directeur d'école">Enseignant / Directeur d'école</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Région de rattachement *</label>
+              <select id="volRegion" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                <option value="Rabat-Salé-Kénitra">Rabat-Salé-Kénitra</option>
+                <option value="Drâa-Tafilalet">Drâa-Tafilalet</option>
+                <option value="Marrakech-Safi">Marrakech-Safi</option>
+                <option value="Souss-Massa">Souss-Massa</option>
+                <option value="Fès-Meknès">Fès-Meknès</option>
+                <option value="Tanger-Tétouan-Al Hoceïma">Tanger-Tétouan-Al Hoceïma</option>
+                <option value="Oriental">Oriental</option>
+                <option value="Béni Mellal-Khénifra">Béni Mellal-Khénifra</option>
+                <option value="Casablanca-Settat">Casablanca-Settat</option>
+                <option value="Guelmim-Oued Noun">Guelmim-Oued Noun</option>
+                <option value="Laâyoune-Sakia El Hamra">Laâyoune-Sakia El Hamra</option>
+                <option value="Dakhla-Oued Ed-Dahab">Dakhla-Oued Ed-Dahab</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Compétence principale</label>
+              <select id="volSkill" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                <option value="Installation salle multimédia & réseau">Installation salle multimédia & réseau</option>
+                <option value="Animation d'ateliers pédagogiques">Animation d'ateliers pédagogiques</option>
+                <option value="Coordination terrain & logistique">Coordination terrain & logistique</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Disponibilité</label>
+              <select id="volAvail" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                <option value="Week-ends">Week-ends</option>
+                <option value="Vacances scolaires">Vacances scolaires</option>
+                <option value="Mercredi après-midi">Mercredi après-midi</option>
+                <option value="Flexible selon calendrier">Flexible selon calendrier</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2 pt-2">
+              <button type="submit" class="w-full bg-inwi-magenta hover:bg-inwi-magenta-dark text-white font-bold py-3.5 rounded-xl shadow-sm transition">
+                Valider mon inscription & activer mon passeport bénévole
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Passeport Bénévole & Valorisation (Phase Regel) -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6 space-y-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-violet">Passeport & Valorisation</span>
+            <span class="bg-inwi-teal text-white text-xs font-bold px-2.5 py-1 rounded-full">Phase Regel</span>
+          </div>
+
+          <div id="volunteerCard" class="bg-white rounded-xl p-5 border border-purple-100 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-inwi-magenta text-white font-extrabold flex items-center justify-center text-lg" id="cardAvatar">DI</div>
+              <div>
+                <h3 class="font-bold text-inwi-violet" id="cardName">Visiteur Dir Iddik</h3>
+                <p class="text-xs text-gray-500" id="cardMeta">Complétez le formulaire pour générer votre badge</p>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2" id="cardBadges">
+              <span class="text-xs bg-purple-100 text-inwi-violet font-semibold px-2.5 py-1 rounded-lg">🌱 Nouveau Membre</span>
+              <span class="text-xs bg-pink-100 text-inwi-magenta font-semibold px-2.5 py-1 rounded-lg">🤝 Citoyen Engagé</span>
+            </div>
+            <div class="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+              <strong>Missions rejointes :</strong> <span id="myMissionsCount">0 mission</span>
+            </div>
+          </div>
+
+          <div class="text-xs text-gray-600 space-y-1.5">
+            <p class="font-bold text-inwi-violet">Pourquoi s'inscrire sur la plateforme ?</p>
+            <p>• Affectation plus rapide près de votre commune ou université.</p>
+            <p>• Attestation officielle de bénévolat inwi / Dir Iddik en fin de cycle.</p>
+            <p>• Accès direct aux guides hors-ligne pour les écoles rurales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 3 : SUIVI DES ÉCOLES EN TEMPS RÉEL -->
+    <section id="ecoles" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Fonctionnalité 3 · Transparence terrain</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet mt-1">Suivi des Classes Connectées en temps réel</h2>
+          <p class="text-gray-600 text-sm mt-1">Avancement des installations matérielles et des ateliers pédagogiques par école et association relais.</p>
+        </div>
+        <span class="text-xs bg-white border border-purple-200 px-3 py-2 rounded-xl font-semibold text-inwi-violet">
+          Mise à jour collaborative (Associations & Référents)
+        </span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-purple-100 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-inwi-violet text-white text-xs uppercase tracking-wider">
+                <th class="py-3.5 px-5">École & Commune</th>
+                <th class="py-3.5 px-5">Région</th>
+                <th class="py-3.5 px-5">Association Relais</th>
+                <th class="py-3.5 px-5">Avancement Salle</th>
+                <th class="py-3.5 px-5">Statut</th>
+                <th class="py-3.5 px-5 text-right">Action terrain</th>
+              </tr>
+            </thead>
+            <tbody id="schoolsTableBody" class="divide-y divide-gray-100 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 4 : COMMUNICATION DIGITALE & ACCOMPAGNEMENT (RÉSISTANCES) -->
+    <section id="communication" class="grid lg:grid-cols-12 gap-8">
+      <div class="lg:col-span-7 bg-white rounded-2xl border border-purple-100 p-6 sm:p-8 space-y-5">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-teal">Fonctionnalité 4 · Formation & Réduction des résistances</span>
+          <h2 class="text-2xl font-extrabold text-inwi-violet mt-1">Kits Pratiques & Communication Digitale</h2>
+          <p class="text-gray-600 text-sm mt-1">Supports légers optimisés pour la connexion rurale et canaux directs avec les référents de zone.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="border border-purple-100 rounded-xl p-4 hover:border-inwi-magenta transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold bg-pink-100 text-inwi-magenta px-2.5 py-0.5 rounded-full">Tutoriel 3 min</span>
+              <span class="text-xs text-gray-400">120 Ko · Hors-ligne</span>
+            </div>
+            <h3 class="font-bold text-inwi-violet text-sm">Prise en main de la plateforme</h3>
+            <p class="text-xs text-gray-600">Guide pas-à-pas : inscription, choix d'une mission et validation de présence.</p>
+            <button onclick="showToast('Guide PDF léger (120 Ko) téléchargé pour consultation hors-ligne !')" class="text-xs font-bold text-inwi-magenta hover:underline pt-1">
+              Télécharger la fiche mémo &rarr;
+            </button>
+          </div>
+
+          <div class="border border-purple-100 rounded-xl p-4 hover:border-inwi-magenta transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold bg-teal-100 text-inwi-teal px-2.5 py-0.5 rounded-full">Kit Technique</span>
+              <span class="text-xs text-gray-400">Check-list</span>
+            </div>
+            <h3 class="font-bold text-inwi-violet text-sm">Installation d'une salle multimédia</h3>
+            <p class="text-xs text-gray-600">Procédure d'installation des postes PC, routeur 4G/VSAT inwi et logiciels éducatifs.</p>
+            <button onclick="showToast('Check-list installation ouverte !')" class="text-xs font-bold text-inwi-magenta hover:underline pt-1">
+              Ouvrir la check-list &rarr;
+            </button>
+          </div>
+
+          <div class="border border-purple-100 rounded-xl p-4 hover:border-inwi-magenta transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold bg-purple-100 text-inwi-violet px-2.5 py-0.5 rounded-full">Pédagogie</span>
+              <span class="text-xs text-gray-400">Atelier 2h</span>
+            </div>
+            <h3 class="font-bold text-inwi-violet text-sm">Animer un atelier numérique primaire</h3>
+            <p class="text-xs text-gray-600">Séquences ludiques d'initiation à l'informatique et à internet sécurisé pour les élèves.</p>
+            <button onclick="showToast('Support atelier pédagogique prêt !')" class="text-xs font-bold text-inwi-magenta hover:underline pt-1">
+              Voir le scénario d'atelier &rarr;
+            </button>
+          </div>
+
+          <div class="border border-purple-100 rounded-xl p-4 bg-emerald-50/50 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">Assistance directe</span>
+              <span class="text-xs text-emerald-700 font-semibold">En ligne</span>
+            </div>
+            <h3 class="font-bold text-inwi-violet text-sm">Référents de Zone & Support SI</h3>
+            <p class="text-xs text-gray-600">Besoin d'aide sur le terrain ? Contactez votre coordinateur régional via WhatsApp.</p>
+            <a href="https://wa.me/212600000000?text=Bonjour%20R%C3%A9f%C3%A9rent%20Dir%20Iddik%2C%20j'ai%20besoin%20d'assistance%20sur%20une%20Classe%20Connect%C3%A9e." target="_blank" class="inline-block text-xs font-bold text-emerald-700 hover:underline pt-1">
+              Contacter le support WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 5 : MESURE DE L'IMPACT & INDICATEURS DE RÉUSSITE (KPIs) -->
+    <section id="impact" class="bg-white rounded-3xl border border-purple-100 p-6 sm:p-10 shadow-sm space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Fonctionnalité 5 · Pilotage RSE & Pérennisation</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet mt-1">Tableau de Bord & Indicateurs de Réussite</h2>
+          <p class="text-gray-600 text-sm mt-1">Suivi des cibles d'adoption, de formation, de satisfaction et de réduction des délais d'affectation.</p>
+        </div>
+      </div>
+
+      <!-- 4 KPIs Quantitatifs du Chapitre 6 -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-purple-50/70 border border-purple-100 rounded-2xl p-5 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-500 uppercase">Taux d'adoption</span>
+            <span class="text-xs font-bold text-inwi-violet bg-purple-100 px-2 py-0.5 rounded">Cible : 80 %</span>
+          </div>
+          <div id="kpiAdoptionVal" class="text-3xl font-extrabold text-inwi-violet">74 %</div>
+          <div class="w-full bg-purple-200 h-2 rounded-full overflow-hidden">
+            <div id="kpiAdoptionBar" class="bg-inwi-violet h-full rounded-full" style="width: 74%"></div>
+          </div>
+          <p class="text-xs text-gray-500">Bénévoles inscrits / total mobilisés</p>
+        </div>
+
+        <div class="bg-teal-50/70 border border-teal-100 rounded-2xl p-5 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-500 uppercase">Formations suivies</span>
+            <span class="text-xs font-bold text-inwi-teal bg-teal-100 px-2 py-0.5 rounded">Cible : 70 %</span>
+          </div>
+          <div class="text-3xl font-extrabold text-inwi-teal">72 %</div>
+          <div class="w-full bg-teal-200 h-2 rounded-full overflow-hidden">
+            <div class="bg-inwi-teal h-full rounded-full" style="width: 72%"></div>
+          </div>
+          <p class="text-xs text-gray-500">Référents et bénévoles formés</p>
+        </div>
+
+        <div class="bg-pink-50/70 border border-pink-100 rounded-2xl p-5 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-500 uppercase">Satisfaction</span>
+            <span class="text-xs font-bold text-inwi-magenta bg-pink-100 px-2 py-0.5 rounded">Cible : 4 / 5</span>
+          </div>
+          <div id="kpiSatVal" class="text-3xl font-extrabold text-inwi-magenta">4.3 / 5</div>
+          <div class="w-full bg-pink-200 h-2 rounded-full overflow-hidden">
+            <div class="bg-inwi-magenta h-full rounded-full" style="width: 86%"></div>
+          </div>
+          <p class="text-xs text-gray-500">Note moyenne des utilisateurs</p>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-500 uppercase">Respect des délais</span>
+            <span class="text-xs font-bold text-gray-700 bg-gray-200 px-2 py-0.5 rounded">Cible : 90 %</span>
+          </div>
+          <div class="text-3xl font-extrabold text-gray-800">91 %</div>
+          <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+            <div class="bg-gray-800 h-full rounded-full" style="width: 91%"></div>
+          </div>
+          <p class="text-xs text-gray-500">Étapes tenues sur le planning</p>
+        </div>
+      </div>
+
+      <!-- Mini Sondage Feedback Terrain -->
+      <div class="bg-purple-50/60 border border-purple-100 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="font-bold text-inwi-violet text-sm">Votre avis compte pour améliorer la plateforme (Écoute & Co-construction)</h3>
+          <p class="text-xs text-gray-600">Évaluez la simplicité de cet outil pour vos missions Dir Iddik :</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="ratePlatform(3)" class="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs font-bold hover:border-inwi-magenta">3/5 Correct</button>
+          <button onclick="ratePlatform(4)" class="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs font-bold hover:border-inwi-magenta">4/5 Très utile</button>
+          <button onclick="ratePlatform(5)" class="px-3 py-1.5 bg-inwi-magenta text-white rounded-lg text-xs font-bold hover:bg-inwi-magenta-dark">5/5 Excellent</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-inwi-violet text-purple-200 py-10 px-4 mt-16">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs">
+      <div class="space-y-1 text-center md:text-left">
+        <div class="text-white font-extrabold text-base">Dir Iddik · Classes Connectées (inwi)</div>
+        <p>Projet de digitalisation et conduite du changement · École Supérieure de Technologie de Salé (UM5 Rabat)</p>
+      </div>
+      <div class="text-center md:text-right space-y-1">
+        <p>Partenaires : Fondation Al Mada · Managem · Nareva · Ministère de l'Éducation Nationale</p>
+        <p class="text-pink-300">Prototype prêt pour déploiement GitHub Pages</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- NOTIFICATION TOAST -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-inwi-violet text-white text-sm font-medium px-5 py-3.5 rounded-xl shadow-lg border border-pink-400/40 max-w-sm"></div>
+
+  <!-- LOGIQUE JAVASCRIPT INTERACTIVE -->
+  <script>
+    // Données initiales des missions (basées sur les régions et écoles du projet)
+    const initialMissions = [
+      {
+        id: 1,
+        title: "Installation Salle Multimédia · École Imider",
+        region: "Drâa-Tafilalet",
+        city: "Tinghir",
+        type: "Installation matériel",
+        date: "Samedi 28 Nov. 2026",
+        association: "Association Imider Développement",
+        spotsTotal: 8,
+        spotsTaken: 6,
+        joined: false
+      },
+      {
+        id: 2,
+        title: "Atelier Éveil Numérique · École Sidi Taïbi",
+        region: "Rabat-Salé-Kénitra",
+        city: "Salé / Kénitra",
+        type: "Atelier pédagogique",
+        date: "Mercredi 02 Déc. 2026",
+        association: "Relais Jeunes Bouregreg",
+        spotsTotal: 6,
+        spotsTaken: 4,
+        joined: false
+      },
+      {
+        id: 3,
+        title: "Équipement & Réseau · École Aït Benhaddou",
+        region: "Marrakech-Safi",
+        city: "Al Haouz",
+        type: "Installation matériel",
+        date: "Samedi 05 Déc. 2026",
+        association: "Association Atlas Solidaire",
+        spotsTotal: 10,
+        spotsTaken: 7,
+        joined: false
+      },
+      {
+        id: 4,
+        title: "Atelier Initiation Code & Internet · École Talassemtane",
+        region: "Tanger-Tétouan-Al Hoceïma",
+        city: "Chefchaouen",
+        type: "Atelier pédagogique",
+        date: "Samedi 12 Déc. 2026",
+        association: "Rif Inclusion Numérique",
+        spotsTotal: 5,
+        spotsTaken: 5,
+        joined: false
+      },
+      {
+        id: 5,
+        title: "Maintenance & Suivi Enseignants · École Massa",
+        region: "Souss-Massa",
+        city: "Chtouka-Aït Baha",
+        type: "Suivi & Maintenance",
+        date: "Dimanche 13 Déc. 2026",
+        association: "Souss Éducation Rurale",
+        spotsTotal: 4,
+        spotsTaken: 2,
+        joined: false
+      },
+      {
+        id: 6,
+        title: "Installation Classe Connectée · École Figuig Nord",
+        region: "Oriental",
+        city: "Figuig",
+        type: "Installation matériel",
+        date: "Samedi 19 Déc. 2026",
+        association: "Oasis Connectée Oriental",
+        spotsTotal: 8,
+        spotsTaken: 3,
+        joined: false
+      }
+    ];
+
+    // Données initiales des écoles suivies
+    const initialSchools = [
+      { id: 101, name: "École Primaire Imider", region: "Drâa-Tafilalet", assoc: "Assoc. Imider Dév.", progress: 100, status: "Opérationnelle" },
+      { id: 102, name: "École Rurale Sidi Taïbi", region: "Rabat-Salé-Kénitra", assoc: "Relais Bouregreg", progress: 80, status: "Ateliers en cours" },
+      { id: 103, name: "École Douar Tafraout", region: "Souss-Massa", assoc: "Souss Éducation", progress: 50, status: "Installation matériel" },
+      { id: 104, name: "École Al Haouz Centre", region: "Marrakech-Safi", assoc: "Atlas Solidaire", progress: 25, status: "Planifiée 2026" }
+    ];
+
+    let missions = JSON.parse(localStorage.getItem('diriddik_missions')) || initialMissions;
+    let schools = JSON.parse(localStorage.getItem('diriddik_schools')) || initialSchools;
+    let volunteerProfile = JSON.parse(localStorage.getItem('diriddik_profile')) || null;
+    let volunteerCount = parseInt(localStorage.getItem('diriddik_count')) || 148;
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3800);
+    }
+
+    // Mode Bas Débit pour zones rurales
+    function toggleLowDataMode() {
+      document.body.classList.toggle('low-data-mode');
+      const isLow = document.body.classList.contains('low-data-mode');
+      document.getElementById('lowDataText').textContent = isLow ? 'Mode Bas Débit : ON' : 'Mode Bas Débit : OFF';
+      document.getElementById('lowDataDot').className = isLow ? 'w-2 h-2 rounded-full bg-amber-400' : 'w-2 h-2 rounded-full bg-emerald-400';
+      showToast(isLow ? 'Mode Bas Débit activé : interface allégée pour connexion rurale.' : 'Mode Standard activé.');
+    }
+
+    // Changement de vue selon l'acteur (Bénévole / Association / Direction RSE)
+    function switchRole(role) {
+      const desc = document.getElementById('roleDescription');
+      if (role === 'benevole') {
+        desc.innerHTML = 'Vous naviguez en tant que <strong>Bénévole (inwi ou externe)</strong> : inscrivez-vous et postulez en 1 clic à une mission.';
+      } else if (role === 'association') {
+        desc.innerHTML = 'Vous naviguez en tant qu\'<strong>Association locale relais</strong> : mettez à jour l\'avancement des écoles de votre zone.';
+      } else {
+        desc.innerHTML = 'Vous naviguez en tant que <strong>Direction RSE / Référent</strong> : pilotez les indicateurs d\'adoption et la couverture des 12 régions.';
+      }
+    }
+
+    // Affichage des missions filtrées
+    function renderMissions() {
+      const reg = document.getElementById('filterRegion').value;
+      const type = document.getElementById('filterType').value;
+      const grid = document.getElementById('missionsGrid');
+
+      const filtered = missions.filter(m => {
+        const matchReg = reg === 'all' || m.region === reg;
+        const matchType = type === 'all' || m.type === type;
+        return matchReg && matchType;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-2xl border border-purple-100 text-center text-gray-500 text-sm">Aucune mission ne correspond à ce filtre pour le moment.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(m => {
+        const pct = Math.min(100, Math.round((m.spotsTaken / m.spotsTotal) * 100));
+        const isFull = m.spotsTaken >= m.spotsTotal && !m.joined;
+
+        return `
+          <div class="bg-white rounded-2xl border border-purple-100 p-6 flex flex-col justify-between shadow-sm hover:border-inwi-magenta transition">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${m.type === 'Installation matériel' ? 'bg-purple-100 text-inwi-violet' : 'bg-pink-100 text-inwi-magenta'}">
+                  ${m.type}
+                </span>
+                <span class="text-xs text-gray-500 font-medium">${m.date}</span>
+              </div>
+
+              <h3 class="font-extrabold text-inwi-violet text-base leading-snug">${m.title}</h3>
+
+              <div class="text-xs text-gray-600 space-y-1">
+                <p>📍 <strong>Région :</strong> ${m.region} (${m.city})</p>
+                <p>🤝 <strong>Relais :</strong> ${m.association}</p>
+              </div>
+            </div>
+
+            <div class="pt-5 mt-4 border-t border-gray-100 space-y-3">
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-gray-600">Bénévoles mobilisés</span>
+                  <span class="text-inwi-violet">${m.spotsTaken} / ${m.spotsTotal} places</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-inwi-magenta h-full rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </div>
+
+              <button
+                onclick="toggleJoinMission(${m.id})"
+                ${isFull ? 'disabled' : ''}
+                class="w-full py-2.5 rounded-xl text-xs font-bold transition ${
+                  m.joined
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : isFull
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-inwi-violet text-white hover:bg-inwi-magenta'
+                }">
+                ${m.joined ? '✓ Inscrit à cette mission (Annuler)' : isFull ? 'Mission complète' : 'Postuler à cette mission'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleJoinMission(id) {
+      missions = missions.map(m => {
+        if (m.id === id) {
+          if (m.joined) {
+            m.joined = false;
+            m.spotsTaken = Math.max(0, m.spotsTaken - 1);
+            showToast('Participation annulée pour : ' + m.title);
+          } else {
+            m.joined = true;
+            m.spotsTaken += 1;
+            showToast('Bravo ! Vous êtes affecté à la mission : ' + m.title);
+          }
+        }
+        return m;
+      });
+      localStorage.setItem('diriddik_missions', JSON.stringify(missions));
+      renderMissions();
+      updateVolunteerCard();
+    }
+
+    // Inscription bénévole
+    function handleVolunteerRegister(e) {
+      e.preventDefault();
+      volunteerProfile = {
+        name: document.getElementById('volName').value.trim(),
+        phone: document.getElementById('volPhone').value.trim(),
+        role: document.getElementById('volRole').value,
+        region: document.getElementById('volRegion').value,
+        skill: document.getElementById('volSkill').value,
+        avail: document.getElementById('volAvail').value
+      };
+      volunteerCount += 1;
+      localStorage.setItem('diriddik_profile', JSON.stringify(volunteerProfile));
+      localStorage.setItem('diriddik_count', volunteerCount);
+
+      document.getElementById('liveVolunteerCount').textContent = volunteerCount + ' bénévoles';
+      document.getElementById('kpiAdoptionVal').textContent = '78 %';
+      document.getElementById('kpiAdoptionBar').style.width = '78%';
+
+      updateVolunteerCard();
+      showToast('Bienvenue dans Dir Iddik, ' + volunteerProfile.name + ' ! Votre passeport bénévole est actif.');
+    }
+
+    function updateVolunteerCard() {
+      const joinedCount = missions.filter(m => m.joined).length;
+      document.getElementById('myMissionsCount').textContent = joinedCount + (joinedCount > 1 ? ' missions rejointes' : ' mission rejointe');
+
+      if (volunteerProfile) {
+        const initials = volunteerProfile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        document.getElementById('cardAvatar').textContent = initials || 'DI';
+        document.getElementById('cardName').textContent = volunteerProfile.name;
+        document.getElementById('cardMeta').textContent = `${volunteerProfile.role} · ${volunteerProfile.region}`;
+
+        let badgesHTML = `<span class="text-xs bg-purple-100 text-inwi-violet font-semibold px-2.5 py-1 rounded-lg">✓ Profil Vérifié</span>`;
+        badgesHTML += `<span class="text-xs bg-pink-100 text-inwi-magenta font-semibold px-2.5 py-1 rounded-lg">📍 ${volunteerProfile.region}</span>`;
+        if (joinedCount >= 1) {
+          badgesHTML += `<span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-lg">🏅 Bénévole Actif Dir Iddik</span>`;
+        }
+        document.getElementById('cardBadges').innerHTML = badgesHTML;
+      }
+    }
+
+    // Tableau de suivi des écoles
+    function renderSchools() {
+      const tbody = document.getElementById('schoolsTableBody');
+      tbody.innerHTML = schools.map(s => {
+        const badgeColor = s.progress === 100
+          ? 'bg-emerald-100 text-emerald-800'
+          : s.progress >= 75
+          ? 'bg-teal-100 text-teal-800'
+          : 'bg-pink-100 text-inwi-magenta';
+
+        return `
+          <tr class="hover:bg-purple-50/40 transition">
+            <td class="py-4 px-5 font-bold text-inwi-violet">${s.name}</td>
+            <td class="py-4 px-5 text-gray-600">${s.region}</td>
+            <td class="py-4 px-5 text-gray-600">${s.assoc}</td>
+            <td class="py-4 px-5 w-48">
+              <div class="flex items-center gap-2">
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-inwi-teal h-full rounded-full" style="width: ${s.progress}%"></div>
+                </div>
+                <span class="text-xs font-bold text-gray-700">${s.progress}%</span>
+              </div>
+            </td>
+            <td class="py-4 px-5">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${badgeColor}">${s.status}</span>
+            </td>
+            <td class="py-4 px-5 text-right">
+              <button onclick="advanceSchool(${s.id})" class="text-xs font-bold text-inwi-magenta hover:underline">
+                +25 % Avancement
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function advanceSchool(id) {
+      schools = schools.map(s => {
+        if (s.id === id) {
+          s.progress = s.progress >= 100 ? 25 : Math.min(100, s.progress + 25);
+          if (s.progress === 100) s.status = 'Opérationnelle';
+          else if (s.progress >= 75) s.status = 'Ateliers en cours';
+          else if (s.progress >= 50) s.status = 'Installation matériel';
+          else s.status = 'Planifiée 2026';
+          showToast(`Suivi mis à jour : ${s.name} (${s.progress} %)`);
+        }
+        return s;
+      });
+      localStorage.setItem('diriddik_schools', JSON.stringify(schools));
+      renderSchools();
+    }
+
+    function ratePlatform(score) {
+      document.getElementById('kpiSatVal').textContent = score + '.0 / 5';
+      showToast(`Merci ! Votre note de ${score}/5 a été enregistrée dans le tableau de bord RSE.`);
+    }
+
+    // Initialisation au chargement
+    document.getElementById('liveVolunteerCount').textContent = volunteerCount + ' bénévoles';
+    renderMissions();
+    renderSchools();
+    updateVolunteerCard();
+  </script>
+</body>
+</html>
